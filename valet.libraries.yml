@@ -1,0 +1,22 @@
+valet:
+  version: 8.x-1.x-dev
+  js:
+    js/valet.js: { minified: true }
+  css:
+    component:
+      css/valet.css: {}
+  dependencies:
+    - core/jquery
+    - core/backbone
+    - core/drupal
+    - core/drupalSettings
+    - core/jquery.once
+    - core/jquery.ui.autocomplete
+valet.admin:
+  version: 8.x-1.x-dev
+  js:
+    js/valet.admin.js: { minified: true }
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings

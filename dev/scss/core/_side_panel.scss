@@ -1,0 +1,69 @@
+.valet.left,
+.valet.right {
+
+  .valet-inner {
+    height: 100vh;
+    background: darken($bg-color, 5%);
+  }
+
+  .valet-form {
+    margin: 0;
+    box-shadow: none;
+  }
+
+  [type=search] {
+    border-radius: 0;
+  }
+
+  .valet-results {
+
+    .ui-autocomplete {
+      margin: 0;
+    }
+
+    .ui-menu-item {
+      width: 90%;
+      box-shadow: 0 1px 2px transparentize($black, 1);
+      border-top: 1px solid $white;
+      border-bottom: 1px solid $grey;
+      border-radius: 0;
+      margin: 0 auto;
+
+      &.ui-state-focus {
+        width: 100%;
+        border-top: 1px solid $grey;
+        box-shadow: 0 1px 8px transparentize($black, 0.95);
+        z-index: 1;
+        margin: -1px auto 0;
+      }
+
+      &:first-child {
+        margin-top: -1px;
+      }
+    }
+
+    //prevent active flicker of first result while search
+    &.searching {
+
+      :first-child {
+        width: 100%;
+      }
+    }
+  }
+}
+
+// left specific styling
+.valet.left {
+
+  .valet-inner {
+    float: left;
+  }
+}
+
+// right specific styling
+.valet.right {
+
+  .valet-inner {
+    float: right;
+  }
+}

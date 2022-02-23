@@ -1,0 +1,48 @@
+.valet {
+
+  div, span, p, a, em, small, strong, form {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+  }
+
+  input {
+    margin: 0;
+    padding: 0;
+    line-height: $valet-padding;
+    appearance: none;
+  }
+
+  a {
+    text-decoration: none;
+    text-shadow: none;
+    background-color: transparent;
+    border: 0;
+
+    &:hover {
+      text-decoration: none;
+      text-shadow: none;
+      background-color: transparent;
+      border: 0;
+    }
+
+    &:focus {
+      outline: none;
+      background-color: transparent;
+      border: 0;
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    margin: 0;
+    padding: 0;
+  }
+}
