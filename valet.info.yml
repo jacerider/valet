@@ -4,4 +4,4 @@ package: Administration
 type: module
 core_version_requirement: ^8.8 || ^9
 configure: valet.valet_admin_form
-version: 1.0.2
+version: 1.0.3
