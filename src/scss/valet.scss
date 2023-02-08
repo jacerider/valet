@@ -40,7 +40,11 @@ $text: #000;
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
-    transition: opacity 200ms;
+
+    .valet--wrapper {
+      opacity: 1;
+    }
+    // transition: opacity 200ms;
   }
 }
 
@@ -49,11 +53,13 @@ $text: #000;
   display: flex;
   align-items: center;
   margin-top: 60px;
+  opacity: 0;
+  transition: opacity 400ms;
 }
 
 .valet--form {
   position: relative;
-  background: linear-gradient(180deg, gray(85), gray(95));
+  background: linear-gradient(180deg, gray(80), gray(90));
   border-radius: $radius;
   padding: $padding;
   box-shadow: 0 20px 40px -20px gray(100);
@@ -94,7 +100,7 @@ $text: #000;
   background-color: $primary;
   color: offset($primary);
   border-radius: 0 $radius $radius 0;
-  padding: calc(#{$padding} / 2);
+  padding: calc(#{$padding} / 1.5);
   cursor: pointer;
   width: 40px;
   box-sizing: border-box;
@@ -141,8 +147,7 @@ $text: #000;
   }
 
   > input {
-    // background-color: gray(80);
-    background: linear-gradient(180deg, gray(95), gray(90));
+    background-color: transparent;
     color: gray(0);
     width: 100%;
     height: $height;
@@ -156,8 +161,6 @@ $text: #000;
     border-radius: $radius;
     transition: all 500ms ease;
     border: 0 !important;
-    border-top: 1px solid gray(100) !important;
-    border-bottom: 1px solid gray(85) !important;
     outline: 0 !important;
 
     &::placeholder {
@@ -168,7 +171,8 @@ $text: #000;
     }
 
     &::selection {
-      background-color: rgba($primary, 0.15);
+      background-color: $primary !important;
+      color: gray(0);
     }
 
     &:hover {
@@ -214,14 +218,17 @@ $text: #000;
     }
 
     > li {
-      background-color: gray(80);
+      // background-color: gray(80);
+      background: linear-gradient(180deg, gray(100), gray(95));
+      border: 1px solid transparent;
+      border-top: 1px solid gray(100);
+      border-bottom: 1px solid gray(85);
       color: gray(10);
       border-radius: $radius;
       padding: $padding;
       margin: $padding 0;
       line-height: 1.2;
       letter-spacing: 0.5px;
-      border: 1px solid gray(80);
 
       .title {
         display: block;
@@ -265,7 +272,8 @@ $text: #000;
 
       &:hover {
         cursor: pointer;
-        background-color: gray(90);
+        background-color: transparent;
+        border: 1px solid transparent;
       }
 
       &[aria-selected='true'] {
