@@ -42,18 +42,7 @@ class Valet extends RenderElement {
    * Prepares a #type 'valet' render element for input.html.twig.
    */
   public static function preRenderValet($element) {
-    $renderer = \Drupal::service('renderer');
-    $config = \Drupal::config('valet.admin');
-    $csrfToken = \Drupal::service('csrf_token');
-    $cid = 'valet:' . $csrfToken->get('/api/valet') . ':timestamp';
-    $cache_timestamp = \Drupal::cache()->get($cid);
-    $element['#attributes']['class'][] = $config->get('position');
-    $element['#attached']['drupalSettings']['valet'] = [
-      'modifier' => $config->get('modifier'),
-      'hotkey' => $config->get('hotkey'),
-      'cache' => $cache_timestamp ? $cache_timestamp->data : NULL,
-    ];
-    $renderer->addCacheableDependency($element, $config);
+    $element['#attributes']['data-cache-id'] = \Drupal::state()->get('valet.cache_id') . '-' . \Drupal::currentUser()->id();
     return $element;
   }
 

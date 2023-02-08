@@ -1,1 +1,2 @@
-"use strict";!function(t,e,i){e.behaviors.valetAdmin={attach:function(e){t("#edit-hotkey").bind("keyup",function(e){t(this).val(e.keyCode)})}}}(jQuery,Drupal,drupalSettings);
+"use strict";
+//# sourceMappingURL=valet.admin.js.map

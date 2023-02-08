@@ -5,7 +5,8 @@
  * Contains valet.module.
  */
 
-use Drupal\Core\Url;
+use Drupal\Core\Cache\Cache;
+use Drupal\user\RoleInterface;
 
 /**
  * Implements hook_page_bottom().
@@ -25,20 +26,6 @@ function valet_page_bottom(array &$page_bottom) {
 }
 
 /**
- * Implements hook_page_top().
- *
- * Add admin toolbar to the top of the page automatically.
- */
-function valet_page_top(array &$page_top) {
-  if (\Drupal::currentUser()->id() == 1) {
-    $config = \Drupal::config('valet.admin');
-    if ($config->get('toolbar_disable')) {
-      unset($page_top['toolbar']);
-    }
-  }
-}
-
-/**
  * Implements hook_theme().
  */
 function valet_theme() {
@@ -50,78 +37,29 @@ function valet_theme() {
 }
 
 /**
- * Implements hook_hook_info().
+ * Implements hook_ENTITY_TYPE_presave().
  */
-function valet_hook_info() {
-  $hooks = [
-    'valet_results_alter' => [
-      'group' => 'valet',
-    ],
-  ];
-  return $hooks;
+function valet_user_role_presave(RoleInterface $role) {
+  // Reset cache.
+  valet_reset_cache_id();
 }
 
 /**
- * Prepares variables for administration toolbar templates.
- *
- * Default template: valet.html.twig.
- *
- * @param array $vars
- *   An associative array containing:
- *   - element: An associative array containing the properties and children of
- *     the tray. Properties used: #children, #attributes and #bar.
+ * Implements hook_cache_flush().
  */
-function template_preprocess_valet(array &$vars) {
-  $element = $vars['element'];
-  // Prepare valet attributes.
-  $vars['attributes'] = $element['#attributes'];
+function valet_cache_flush() {
+  Cache::invalidateTags(['valet_resources']);
+  // Reset cache.
+  valet_reset_cache_id();
 }
 
 /**
- * Implements hook_css_alter().
+ * Reset the cache id.
  */
-function valet_css_alter(&$css) {
-
-  $system_css_preprocess = \Drupal::config('system.performance')->get('css.preprocess');
-
-  if (!$system_css_preprocess) {
-    foreach ($css as $key => $value) {
-      // If (strpos($value['data'], 'modules/') ==! FALSE) {
-      // This option forces embeding with a link element.
-      $css[$key]['preprocess'] = FALSE;
-      // }.
-    }
+function valet_reset_cache_id() {
+  $set = &drupal_static(__FUNCTION__, FALSE);
+  if (!$set) {
+    $set = TRUE;
+    Drupal::state()->set('valet.cache_id', base_convert(\Drupal::time()->getRequestTime(), 10, 36));
   }
-}
-
-/**
- * Implements hook_toolbar().
- */
-function valet_toolbar() {
-  $items['valet'] = [
-    '#cache' => [
-      'contexts' => ['user.permissions'],
-    ],
-  ];
-
-  if (\Drupal::currentUser()->hasPermission('access valet')) {
-    $items['valet'] += [
-      '#weight' => 999,
-      '#type' => 'toolbar_item',
-      'tab' => [
-        '#type' => 'link',
-        '#title' => t('Go to'),
-        '#url' => Url::fromRoute('<none>'),
-        '#attributes' => [
-          'title' => t('Use alt+d to start Valet and search for a page to go to') . ' ',
-          'class' => ['toolbar-icon', 'toolbar-icon-valet', 'valet-trigger'],
-        ],
-      ],
-      '#attached' => [
-        'library' => ['valet/valet'],
-      ],
-    ];
-  }
-
-  return $items;
 }

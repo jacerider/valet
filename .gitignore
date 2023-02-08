@@ -1,3 +1,2 @@
-/dev/node_modules
-/dev/config/config.local.json
-dev/npm-debug.log
+node_modules
+config.local.json
