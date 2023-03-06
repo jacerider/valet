@@ -152,7 +152,7 @@ class Menu extends ValetResourceBase implements ContainerFactoryPluginInterface 
     $this->addCacheTags(['routes']);
 
     $url = Url::fromRoute('<front>')->toString();
-    $results[] = new ValetItem([
+    $results[$url] = new ValetItem([
       'label' => 'Front Page',
       'description' => 'Go to front page',
       'url' => $url,
