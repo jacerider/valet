@@ -28,8 +28,10 @@ declare var drupalSettings:any;
       document.addEventListener('keydown', (event) => {
         this.keysPressed[event.key] = true;
         if (this.keysPressed['Shift'] && this.keysPressed[' ']) {
-          event.preventDefault();
-          this.open();
+          if (!this.isEditableElement(document.activeElement)) {
+            event.preventDefault();
+            this.open();
+          }
         }
         if (this.isOpen === true && this.keysPressed['Escape']) {
           event.preventDefault();
@@ -187,6 +189,18 @@ declare var drupalSettings:any;
     public close() {
       this.isOpen = false;
       this.$element.classList.remove('valet--active');
+    }
+
+    protected isEditableElement = (el: EventTarget) => {
+      if (el instanceof HTMLElement && el.isContentEditable) return true;
+      if (el instanceof HTMLInputElement) {
+        // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#input_types
+        if (/|text|email|number|password|search|tel|url/.test(el.type || '')) {
+          return !(el.disabled || el.readOnly);
+        }
+      }
+      if (el instanceof HTMLTextAreaElement) return !(el.disabled || el.readOnly);
+      return false;
     }
 
   }

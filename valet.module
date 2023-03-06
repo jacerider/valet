@@ -40,7 +40,20 @@ function valet_theme() {
  * Implements hook_ENTITY_TYPE_presave().
  */
 function valet_user_role_presave(RoleInterface $role) {
-  // Reset cache.
+  valet_reset_cache_id();
+}
+
+/**
+ * Implements hook_modules_installed().
+ */
+function valet_modules_installed($modules, $is_syncing) {
+  valet_reset_cache_id();
+}
+
+/**
+ * Implements hook_modules_uninstalled().
+ */
+function valet_modules_uninstalled($modules, $is_syncing) {
   valet_reset_cache_id();
 }
 

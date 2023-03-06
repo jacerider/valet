@@ -33,8 +33,9 @@ $text: #000;
   align-items: flex-start;
   justify-content: center;
   background-color: rgba(gray(0), 0.7);
-  font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
   z-index: 9999;
+  -moz-osx-font-smoothing: grayscale;
 
   &.valet--active {
     visibility: visible;
@@ -44,7 +45,6 @@ $text: #000;
     .valet--wrapper {
       opacity: 1;
     }
-    // transition: opacity 200ms;
   }
 }
 
@@ -62,7 +62,8 @@ $text: #000;
   background: linear-gradient(180deg, gray(80), gray(90));
   border-radius: $radius;
   padding: $padding;
-  box-shadow: 0 20px 40px -20px gray(100);
+  box-shadow: 0 20px 40px -20px rgba(gray(100), 0.8);
+  border-bottom: 1px solid rgba(gray(0), 0.7);
 }
 
 .valet--search-icon {
@@ -97,7 +98,9 @@ $text: #000;
   top: calc(((#{$height} - 40px) / 2) + $padding);
   left: 100%;
   margin-left: -40px;
-  background-color: $primary;
+  background: linear-gradient(180deg, $primary, darken($primary, 5%));
+  border-top: 1px solid lighten($primary, 5%);
+  border-bottom: 1px solid darken($primary, 10%);
   color: offset($primary);
   border-radius: 0 $radius $radius 0;
   padding: calc(#{$padding} / 1.5);
@@ -132,7 +135,7 @@ $text: #000;
   }
 }
 
-.autoComplete_wrapper {
+.valet--wrapper .valet--form .autoComplete_wrapper {
   display: block;
   position: relative;
   width: 200px;
@@ -143,11 +146,12 @@ $text: #000;
   }
 
   .overview {
-    color: gray(60);
+    color: gray(30);
   }
 
-  > input {
+  > input[type='search'].valet--input {
     background-color: transparent;
+    box-shadow: none;
     color: gray(0);
     width: 100%;
     height: $height;
@@ -156,12 +160,12 @@ $text: #000;
     box-sizing: border-box;
     font-size: 40px;
     font-weight: 300;
-    text-overflow: ellipsis;
+    line-height: 1;
     outline: none;
     border-radius: $radius;
     transition: all 500ms ease;
-    border: 0 !important;
-    outline: 0 !important;
+    border: 0;
+    outline: 0;
 
     &::placeholder {
       color: gray(40);
@@ -171,7 +175,7 @@ $text: #000;
     }
 
     &::selection {
-      background-color: $primary !important;
+      background-color: $primary;
       color: gray(0);
     }
 
@@ -218,12 +222,11 @@ $text: #000;
     }
 
     > li {
-      // background-color: gray(80);
       background: linear-gradient(180deg, gray(100), gray(95));
       border: 1px solid transparent;
       border-top: 1px solid gray(100);
       border-bottom: 1px solid gray(85);
-      color: gray(10);
+      color: gray(5);
       border-radius: $radius;
       padding: $padding;
       margin: $padding 0;
@@ -272,8 +275,7 @@ $text: #000;
 
       &:hover {
         cursor: pointer;
-        background-color: transparent;
-        border: 1px solid transparent;
+        background: linear-gradient(180deg, gray(93), gray(90));
       }
 
       &[aria-selected='true'] {

@@ -4,6 +4,7 @@ namespace Drupal\valet\Form;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -142,6 +143,7 @@ class ValetAdminForm extends ConfigFormBase {
     $this->config('valet.admin')
       ->set('plugins', $form_state->getValue('plugins'))
       ->save();
+    valet_cache_flush();
     parent::submitForm($form, $form_state);
   }
 
