@@ -16,7 +16,6 @@ class Valet extends RenderElement {
    */
   public function getInfo() {
     $class = get_class($this);
-
     $info = [
       '#theme' => 'valet',
       '#attached' => [

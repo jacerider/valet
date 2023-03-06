@@ -26,6 +26,7 @@ class ValetItem implements \IteratorAggregate, \ArrayAccess, \Countable {
     'description' => '',
     'url' => '',
     'icon' => '',
+    'tags' => [],
   ];
 
   /**
@@ -89,12 +90,23 @@ class ValetItem implements \IteratorAggregate, \ArrayAccess, \Countable {
   }
 
   /**
+   * Add a tag.
+   *
+   * @param string $tag
+   *   The tag.
+   */
+  public function addTag($tag) {
+    $this->data['tags'][$tag] = $tag;
+  }
+
+  /**
    * Returns the data as an array.
    *
    * @return array
    *   The array.
    */
   public function toArray() {
+    $this->data['tags'] = implode(', ', $this->data['tags']);
     return $this->data;
   }
 

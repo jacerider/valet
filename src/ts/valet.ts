@@ -62,7 +62,12 @@ declare var drupalSettings:any;
         data: {
           src: this.getData,
           cache: true,
-          keys: ['label'],
+          filter: (list) => {
+            return list.filter((value, index, self) => {
+              return self.findIndex(v => v.value.url === value.value.url) === index;
+            });
+          },
+          keys: ['label', 'tags'],
         },
         threshold: 1,
         debounce: 50,
@@ -90,7 +95,7 @@ declare var drupalSettings:any;
             // Modify Results Item Content
             item.innerHTML = `
             <span class="title">
-              ${data.match}
+              ${data.value.label}
             </span>
             <span class="description">
               ${data.value.description}
@@ -104,7 +109,6 @@ declare var drupalSettings:any;
       });
       this.autoCompleteJS.input.addEventListener('results', this.onResults);
       this.autoCompleteJS.input.addEventListener('selection', this.onSelection);
-      // this.open();
     }
 
     public onResults = e => {

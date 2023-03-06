@@ -151,10 +151,11 @@ class Menu extends ValetResourceBase implements ContainerFactoryPluginInterface 
 
     $this->addCacheTags(['routes']);
 
+    $url = Url::fromRoute('<front>')->toString();
     $results[] = new ValetItem([
       'label' => 'Front Page',
       'description' => 'Go to front page',
-      'url' => Url::fromRoute('<front>')->toString(),
+      'url' => $url,
     ]);
 
     foreach ($this->getConfigurationValue('menus', []) as $menu_name) {
@@ -177,24 +178,31 @@ class Menu extends ValetResourceBase implements ContainerFactoryPluginInterface 
         // Redirect token which is replaced via JS with actual url.
         $url = str_replace('/api/valet', 'RETURN_URL', htmlspecialchars_decode($url));
 
-        $results[] = new ValetItem([
+        $results[$url] = new ValetItem([
           'label' => $link->getTitle(),
           'description' => $link->getDescription(),
           'url' => $url,
+          'tags' => [
+            strtolower(str_replace('_', ' ', $link->getProvider()) . ' ' . $link->getTitle()),
+          ],
         ]);
 
         $tasks = $this->getLocalTasksForRoute($link->getRouteName(), $link->getRouteParameters());
         foreach ($tasks as $route_name => $task) {
-          $results[] = new ValetItem([
+          $url = $task['url']->toString();
+          $results[$url] = new ValetItem([
             'label' => $link->getTitle() . ': ' . $task['title'],
-            'url' => $task['url']->toString(),
+            'url' => $url,
             'description' => $task['description'] ?? $task['title'],
+            'tags' => [
+              strtolower(str_replace('_', ' ', $link->getProvider()) . ' ' . $link->getTitle() . ' ' . $task['title']),
+            ],
           ]);
         }
       }
     }
 
-    return $results;
+    return array_values($results);
   }
 
   /**
