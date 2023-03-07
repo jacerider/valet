@@ -193,15 +193,17 @@ class Menu extends ValetResourceBase implements ContainerFactoryPluginInterface 
         $tasks = $this->getLocalTasksForRoute($link->getRouteName(), $link->getRouteParameters());
         foreach ($tasks as $route_name => $task) {
           $url = $task['url']->toString();
-          $results[$url] = new ValetItem([
-            'label' => $link->getTitle() . ': ' . $task['title'],
-            'url' => $url,
-            'icon' => $icon,
-            'description' => $task['description'] ?? $task['title'],
-            'tags' => [
-              strtolower(str_replace('_', ' ', $link->getProvider()) . ' ' . $link->getTitle() . ' ' . $task['title']),
-            ],
-          ]);
+          if (!isset($results[$url])) {
+            $results[$url] = new ValetItem([
+              'label' => $link->getTitle() . ': ' . $task['title'],
+              'url' => $url,
+              'icon' => $icon,
+              'description' => $task['description'] ?? $task['title'],
+              'tags' => [
+                strtolower(str_replace('_', ' ', $link->getProvider()) . ' ' . $link->getTitle() . ' ' . $task['title']),
+              ],
+            ]);
+          }
         }
       }
     }
