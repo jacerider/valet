@@ -180,4 +180,21 @@ abstract class ValetResourceBase extends PluginBase implements ValetResourceInte
   public function configurationSubmit(array &$form, FormStateInterface $form_state) {
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function getIcon($string) {
+    if (function_exists('exo_icon')) {
+      if ($icon = exo_icon($string)->match([
+        'valet',
+        'admin',
+        'local_task',
+      ])->getIcon()) {
+        /** @var \Drupal\exo_icon\ExoIcon $icon */
+        return $icon->getSelector();
+      }
+    }
+    return '';
+  }
+
 }

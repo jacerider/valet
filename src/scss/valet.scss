@@ -233,6 +233,10 @@ $text: #000;
       line-height: 1.2;
       letter-spacing: 0.5px;
 
+      .icon {
+        color: lighten($primary, 30%);
+      }
+
       .title {
         display: block;
         white-space: nowrap;

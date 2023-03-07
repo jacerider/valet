@@ -95,6 +95,7 @@ declare var drupalSettings:any;
             // Modify Results Item Content
             item.innerHTML = `
             <span class="title">
+              <span class="icon ${data.value.icon}"></span>
               ${data.value.label}
             </span>
             <span class="description">

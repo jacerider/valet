@@ -156,6 +156,7 @@ class Menu extends ValetResourceBase implements ContainerFactoryPluginInterface 
       'label' => 'Front Page',
       'description' => 'Go to front page',
       'url' => $url,
+      'icon' => $this->getIcon('home'),
     ]);
 
     foreach ($this->getConfigurationValue('menus', []) as $menu_name) {
@@ -177,11 +178,13 @@ class Menu extends ValetResourceBase implements ContainerFactoryPluginInterface 
         }
         // Redirect token which is replaced via JS with actual url.
         $url = str_replace('/api/valet', 'RETURN_URL', htmlspecialchars_decode($url));
+        $icon = $this->getIcon($link->getTitle()) ?: $this->getIcon($link->getProvider());
 
         $results[$url] = new ValetItem([
           'label' => $link->getTitle(),
           'description' => $link->getDescription(),
           'url' => $url,
+          'icon' => $icon,
           'tags' => [
             strtolower(str_replace('_', ' ', $link->getProvider()) . ' ' . $link->getTitle()),
           ],
@@ -193,6 +196,7 @@ class Menu extends ValetResourceBase implements ContainerFactoryPluginInterface 
           $results[$url] = new ValetItem([
             'label' => $link->getTitle() . ': ' . $task['title'],
             'url' => $url,
+            'icon' => $icon,
             'description' => $task['description'] ?? $task['title'],
             'tags' => [
               strtolower(str_replace('_', ' ', $link->getProvider()) . ' ' . $link->getTitle() . ' ' . $task['title']),
