@@ -128,7 +128,7 @@ declare var drupalSettings:any;
 
     public go(value) {
       value = value.replace('RETURN_URL', window.location.pathname.substring(1));
-      if (this.keysPressed['Shift']) {
+      if (this.keysPressed['Control']) {
         this.close();
         window.open(value);
       }
