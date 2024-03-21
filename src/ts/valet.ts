@@ -183,6 +183,7 @@ declare var drupalSettings:any;
     }
 
     public open() {
+      this.keysPressed = {};
       this.isOpen = true;
       this.$element.classList.add('valet--active');
       this.$input.value = '';
