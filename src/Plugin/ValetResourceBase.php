@@ -194,6 +194,15 @@ abstract class ValetResourceBase extends PluginBase implements ValetResourceInte
         return $icon->getSelector();
       }
     }
+    elseif (function_exists('neo_icon')) {
+      $neoIcon = neo_icon($string, NULL, NULL, [
+        'valet',
+        'admin',
+      ]);
+      if ($icon = $neoIcon->getIcon()) {
+        return $icon->getSelector();
+      }
+    }
     return '';
   }
 
