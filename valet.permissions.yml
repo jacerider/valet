@@ -1,4 +1,4 @@
-access exo valet:
+access valet:
   title: 'Use Valet'
-administer exo valet:
+administer valet:
   title: 'Administer Valet'
