@@ -1,6 +1,7 @@
 name: Valet
+type: module
 description: 'An Alfred-inspired navigation system for Drupal.'
 package: Administration
-type: module
+version: 0.0.0
 core_version_requirement: ^9.3 || ^10 || ^11
 configure: valet.valet_admin_form
