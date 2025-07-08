@@ -1,6 +1,6 @@
 plugins:
   menu:
-    status: 1
+    status: true
     settings:
       menus:
         admin: admin
