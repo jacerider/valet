@@ -22,7 +22,7 @@ class ValetAdminForm extends ConfigFormBase {
   /**
    * The Valet resource manager.
    *
-   * @var \Drupal\exo_valet\ValetResourceManagerInterface
+   * @var \Drupal\valet\ValetResourceManagerInterface
    */
   protected $valetResourceManager;
 
@@ -98,7 +98,7 @@ class ValetAdminForm extends ConfigFormBase {
       $form['plugins'][$id]['status'] = [
         '#type' => 'checkbox',
         '#title' => t('Enabled'),
-        '#id' => Html::getUniqueId('exo-valet-' . $id . '-status'),
+        '#id' => Html::getUniqueId('valet-' . $id . '-status'),
         '#default_value' => $this->getValue(['plugins', $id, 'status'], FALSE),
       ];
       $form['plugins'][$id]['settings'] = [];

@@ -7,7 +7,7 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Cache\CacheableDependencyInterface;
 
 /**
- * Defines an interface for eXo Valet Resource managers.
+ * Defines an interface for Valet Resource managers.
  */
 interface ValetResourceManagerInterface extends PluginManagerInterface, CachedDiscoveryInterface, CacheableDependencyInterface {
 

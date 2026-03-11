@@ -14,21 +14,21 @@ abstract class ValetResourceBase extends PluginBase implements ValetResourceInte
   use RefinableCacheableDependencyTrait;
 
   /**
-   * Implem \Drupal\exo\Configurable::baseConfigurationDefaults()
+   * Gets the base configuration defaults.
    */
   protected function baseConfigurationDefaults() {
     return [];
   }
 
   /**
-   * Implements \Drupal\exo\Configurable::defaultConfiguration()
+   * {@inheritdoc}
    */
   public function defaultConfiguration() {
     return [];
   }
 
   /**
-   * Implements \Drupal\exo\Configurable::getDefaultConfiguration()
+   * Gets the default configuration with base defaults merged in.
    */
   public function getDefaultConfiguration() {
     return NestedArray::mergeDeep(
@@ -38,14 +38,14 @@ abstract class ValetResourceBase extends PluginBase implements ValetResourceInte
   }
 
   /**
-   * Implements \Drupal\exo\Configurable::getConfiguration()
+   * {@inheritdoc}
    */
   public function &getConfiguration() {
     return $this->configuration;
   }
 
   /**
-   * Implements \Drupal\exo\Configurable::getValue()
+   * Gets a configuration value.
    */
   public function &getConfigurationValue($key, $default = NULL) {
     $exists = NULL;
@@ -57,7 +57,7 @@ abstract class ValetResourceBase extends PluginBase implements ValetResourceInte
   }
 
   /**
-   * Implements \Drupal\exo\Configurable::setConfiguration()
+   * {@inheritdoc}
    */
   public function setConfiguration(array $values) {
     $existing_values = &$this->getConfiguration();
@@ -69,7 +69,7 @@ abstract class ValetResourceBase extends PluginBase implements ValetResourceInte
   }
 
   /**
-   * Implements \Drupal\exo\Configurable::setValue()
+   * Sets a configuration value.
    */
   public function setConfigurationValue($key, $value) {
     NestedArray::setValue($this->getConfiguration(), (array) $key, $value, TRUE);
@@ -77,7 +77,7 @@ abstract class ValetResourceBase extends PluginBase implements ValetResourceInte
   }
 
   /**
-   * Implements \Drupal\exo\Configurable::unsetValue()
+   * Unsets a configuration value.
    */
   public function unsetConfigurationValue($key) {
     NestedArray::unsetValue($this->getConfiguration(), (array) $key);
@@ -85,7 +85,7 @@ abstract class ValetResourceBase extends PluginBase implements ValetResourceInte
   }
 
   /**
-   * Implements \Drupal\exo\Configurable::hasValue()
+   * Checks if a configuration value exists.
    */
   public function hasConfigurationValue($key) {
     $exists = NULL;
@@ -94,7 +94,7 @@ abstract class ValetResourceBase extends PluginBase implements ValetResourceInte
   }
 
   /**
-   * Implements \Drupal\exo\Configurable::isValueEmpty()
+   * Checks if a configuration value is empty.
    */
   public function isConfigurationValueEmpty($key) {
     $exists = NULL;
@@ -128,7 +128,7 @@ abstract class ValetResourceBase extends PluginBase implements ValetResourceInte
    * plugins should not override this method unless they need to alter the
    * generic form elements.
    *
-   * @see \Drupal\exo\Plugin\ConfigurableFormTrait::configurationForm()
+   * @see \Drupal\valet\Plugin\ValetResourceBase::configurationForm()
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form += $this->configurationForm($form, $form_state);
@@ -149,7 +149,7 @@ abstract class ValetResourceBase extends PluginBase implements ValetResourceInte
    * validation for a specific configuration type, override
    * ConfigurableFormTrait::configurationValidate().
    *
-   * @see \Drupal\exo\Plugin\ConfigurableFormTrait::configurationValidate()
+   * @see \Drupal\valet\Plugin\ValetResourceBase::configurationValidate()
    */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
     $this->configurationValidate($form, $form_state);
@@ -168,7 +168,7 @@ abstract class ValetResourceBase extends PluginBase implements ValetResourceInte
    * submission handling for a specific configuration type, override
    * ConfigurableFormTrait::configurationSubmit().
    *
-   * @see \Drupal\exo\Plugin\ConfigurableFormTrait::configurationSubmit()
+   * @see \Drupal\valet\Plugin\ValetResourceBase::configurationSubmit()
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $this->configurationSubmit($form, $form_state);
@@ -190,7 +190,7 @@ abstract class ValetResourceBase extends PluginBase implements ValetResourceInte
         'admin',
         'local_task',
       ])->getIcon()) {
-        /** @var \Drupal\exo_icon\ExoIcon $icon */
+        /** @var \Drupal\exo_icon\ExoIcon|\Drupal\neo_icon\Icon $icon */
         return $icon->getSelector();
       }
     }

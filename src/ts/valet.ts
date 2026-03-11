@@ -3,7 +3,7 @@ declare var drupalSettings:any;
 
 (function () {
 
-  class ExoValet {
+  class Valet {
     public $element: HTMLElement;
     public $input: HTMLInputElement;
     public $close: HTMLElement;
@@ -63,8 +63,18 @@ declare var drupalSettings:any;
           src: this.getData,
           cache: true,
           filter: (list) => {
+            const history = this.getSelectionHistory();
             return list.filter((value, index, self) => {
               return self.findIndex(v => v.value.url === value.value.url) === index;
+            }).sort((a, b) => {
+              // Prioritize label matches over tag-only matches.
+              const aLabel = a.key === 'label' ? 1 : 0;
+              const bLabel = b.key === 'label' ? 1 : 0;
+              if (aLabel !== bLabel) return bLabel - aLabel;
+              // Then sort by selection history.
+              const aCount = history[a.value.url] || 0;
+              const bCount = history[b.value.url] || 0;
+              return bCount - aCount;
             });
           },
           keys: ['label', 'tags'],
@@ -122,8 +132,23 @@ declare var drupalSettings:any;
       const feedback = e.detail;
       const selection = feedback.selection.value;
       if (typeof selection.url === 'string') {
+        this.trackSelection(selection.url);
         this.go(selection.url);
       }
+    }
+
+    protected getSelectionHistory(): Record<string, number> {
+      try {
+        return JSON.parse(localStorage.getItem('valetHistory')) || {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    protected trackSelection(url: string) {
+      const history = this.getSelectionHistory();
+      history[url] = (history[url] || 0) + 1;
+      localStorage.setItem('valetHistory', JSON.stringify(history));
     }
 
     public go(value) {
@@ -143,11 +168,11 @@ declare var drupalSettings:any;
     public getData = async () => {
       try {
         const cacheId = this.$element.dataset.cacheId;
-        let data = localStorage ? JSON.parse(localStorage.getItem('exoValet')) : null;
+        let data = localStorage ? JSON.parse(localStorage.getItem('valetData')) : null;
         if (localStorage && data !== null) {
-          const oldCacheId = localStorage.getItem('exoValetCacheId');
+          const oldCacheId = localStorage.getItem('valetCacheId');
           if (cacheId !== oldCacheId) {
-            localStorage.setItem('exoValetCacheId', cacheId);
+            localStorage.setItem('valetCacheId', cacheId);
             data = null;
           }
         }
@@ -156,7 +181,7 @@ declare var drupalSettings:any;
           const data = await this.fetchData().then(data => {
             const dataString = JSON.stringify(data);
             if (dataString !== JSON.stringify({})) {
-              localStorage.setItem('exoValet', dataString);
+              localStorage.setItem('valetData', dataString);
             }
             return data;
           });
@@ -211,6 +236,6 @@ declare var drupalSettings:any;
 
   }
 
-  new ExoValet();
+  new Valet();
 
 })();
