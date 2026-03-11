@@ -7,9 +7,11 @@ declare var drupalSettings:any;
     public $element: HTMLElement;
     public $input: HTMLInputElement;
     public $close: HTMLElement;
+    public $popular: HTMLElement;
     public isOpen: boolean = false;
     public autoCompleteJS: any;
     public keysPressed: Object = {};
+    public popularIndex: number = -1;
 
     /**
      * Construct.
@@ -19,8 +21,137 @@ declare var drupalSettings:any;
       this.$input = document.getElementById('valet--input') as HTMLInputElement;
       this.$close = document.getElementById('valet--close');
 
+      this.$popular = this.buildPopular();
       this.bind();
       this.build();
+    }
+
+    protected buildPopular(): HTMLElement {
+      const container = document.createElement('div');
+      container.className = 'valet--popular';
+      container.style.display = 'none';
+      const form = this.$element.querySelector('.valet--form');
+      form.appendChild(container);
+      return container;
+    }
+
+    protected showPopular() {
+      const history = this.getSelectionHistory();
+      const keys = Object.keys(history);
+      if (keys.length === 0) {
+        this.$popular.style.display = 'none';
+        return;
+      }
+
+      // Sort by count descending, take top 5.
+      const top = keys
+        .map(key => ({ url: key, count: history[key] }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+      // Match against cached data to get labels/icons.
+      let data: any[] = [];
+      try {
+        data = JSON.parse(localStorage.getItem('valetData')) || [];
+      } catch (e) {}
+
+      const dataMap: Record<string, any> = {};
+      if (Array.isArray(data)) {
+        data.forEach(item => {
+          if (item.url) dataMap[item.url] = item;
+        });
+      }
+
+      const items = top
+        .map(entry => dataMap[entry.url])
+        .filter(Boolean);
+
+      if (items.length === 0) {
+        this.$popular.style.display = 'none';
+        return;
+      }
+
+      this.$popular.innerHTML = '<div class="valet--popular-label">Recent</div>' +
+        items.map(item => `
+          <a class="valet--popular-item" href="${item.url}" data-url="${item.url}">
+            <span class="icon ${item.icon || ''}"></span>
+            <span class="label">${item.label}</span>
+          </a>
+        `).join('');
+
+      this.$popular.style.display = '';
+      this.popularIndex = -1;
+
+      // Bind click handlers.
+      this.$popular.querySelectorAll('.valet--popular-item').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.preventDefault();
+          const url = (el as HTMLElement).dataset.url;
+          if (url) {
+            this.trackSelection(url);
+            this.go(url);
+          }
+        });
+      });
+    }
+
+    protected hidePopular() {
+      this.$popular.style.display = 'none';
+      this.popularIndex = -1;
+      this.updatePopularSelection();
+    }
+
+    protected isPopularVisible(): boolean {
+      return this.$popular.style.display !== 'none';
+    }
+
+    protected getPopularItems(): NodeListOf<Element> {
+      return this.$popular.querySelectorAll('.valet--popular-item');
+    }
+
+    protected updatePopularSelection() {
+      const items = this.getPopularItems();
+      items.forEach((el, i) => {
+        if (i === this.popularIndex) {
+          el.classList.add('is-active');
+        } else {
+          el.classList.remove('is-active');
+        }
+      });
+    }
+
+    protected handlePopularKeydown(event: KeyboardEvent): boolean {
+      if (!this.isPopularVisible()) return false;
+
+      const items = this.getPopularItems();
+      if (items.length === 0) return false;
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        this.popularIndex = Math.min(this.popularIndex + 1, items.length - 1);
+        this.updatePopularSelection();
+        return true;
+      }
+
+      if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        this.popularIndex = Math.max(this.popularIndex - 1, -1);
+        this.updatePopularSelection();
+        return true;
+      }
+
+      if (event.key === 'Enter' && this.popularIndex >= 0) {
+        event.preventDefault();
+        const el = items[this.popularIndex] as HTMLElement;
+        const url = el.dataset.url;
+        if (url) {
+          this.trackSelection(url);
+          this.go(url);
+        }
+        return true;
+      }
+
+      return false;
     }
 
     protected bind() {
@@ -36,6 +167,10 @@ declare var drupalSettings:any;
         if (this.isOpen === true && this.keysPressed['Escape']) {
           event.preventDefault();
           this.close();
+        }
+        // Handle popular item keyboard navigation.
+        if (this.isOpen) {
+          this.handlePopularKeydown(event);
         }
       });
       // On keyup.
@@ -53,6 +188,20 @@ declare var drupalSettings:any;
       this.$close.addEventListener('click', e => {
         e.preventDefault();
         this.close();
+      });
+      // Reset valet state when returning via browser back/forward.
+      window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+          this.close();
+        }
+      });
+      // Hide popular links on input.
+      this.$input.addEventListener('input', () => {
+        if (this.$input.value.length > 0) {
+          this.hidePopular();
+        } else {
+          this.showPopular();
+        }
       });
     }
 
@@ -212,6 +361,7 @@ declare var drupalSettings:any;
       this.isOpen = true;
       this.$element.classList.add('valet--active');
       this.$input.value = '';
+      this.showPopular();
       setTimeout(() => {
         this.$input.focus();
       }, 300);
@@ -220,6 +370,9 @@ declare var drupalSettings:any;
     public close() {
       this.isOpen = false;
       this.$element.classList.remove('valet--active');
+      this.$input.value = '';
+      this.$input.disabled = false;
+      this.$input.setAttribute('placeholder', 'Search...');
     }
 
     protected isEditableElement = (el: EventTarget) => {
