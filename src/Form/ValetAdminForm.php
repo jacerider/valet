@@ -6,6 +6,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
@@ -33,9 +34,16 @@ class ValetAdminForm extends ConfigFormBase {
    *   The factory for configuration objects.
    * @param \Drupal\valet\ValetResourceManagerInterface $valet_resource_manager
    *   The Valet resource manager.
+   * @param \Drupal\Core\Config\TypedConfigManagerInterface|null $typedConfigManager
+   *   The typed config manager.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, ValetResourceManagerInterface $valet_resource_manager) {
-    parent::__construct($config_factory);
+  public function __construct(ConfigFactoryInterface $config_factory, ValetResourceManagerInterface $valet_resource_manager, TypedConfigManagerInterface $typedConfigManager = NULL) {
+    if ($typedConfigManager) {
+      parent::__construct($config_factory, $typedConfigManager);
+    }
+    else {
+      parent::__construct($config_factory);
+    }
     $this->valetResourceManager = $valet_resource_manager;
   }
 
@@ -45,7 +53,8 @@ class ValetAdminForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('plugin.manager.valet_resource')
+      $container->get('plugin.manager.valet_resource'),
+      $container->has('config.typed') ? $container->get('config.typed') : NULL
     );
   }
 
