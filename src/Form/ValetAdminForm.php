@@ -37,7 +37,7 @@ class ValetAdminForm extends ConfigFormBase {
    * @param \Drupal\Core\Config\TypedConfigManagerInterface|null $typedConfigManager
    *   The typed config manager.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, ValetResourceManagerInterface $valet_resource_manager, TypedConfigManagerInterface $typedConfigManager = NULL) {
+  public function __construct(ConfigFactoryInterface $config_factory, ValetResourceManagerInterface $valet_resource_manager, ?TypedConfigManagerInterface $typedConfigManager = NULL) {
     if ($typedConfigManager) {
       parent::__construct($config_factory, $typedConfigManager);
     }
