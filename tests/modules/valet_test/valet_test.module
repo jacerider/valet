@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * @file
+ * Alters Valet's results for the Valet tests.
+ */
+
+use Drupal\valet\Plugin\ValetItem;
+
+/**
+ * Implements hook_valet_results_alter().
+ *
+ * Adds an item naming its icon by selector alone, as an alter hook does.
+ */
+function valet_test_valet_results_alter($items) {
+  $items->appendItem(new ValetItem([
+    'label' => 'Altered',
+    'url' => '/altered',
+    'icon' => 'icon-test-duo',
+  ]));
+}

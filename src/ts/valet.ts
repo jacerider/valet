@@ -12,6 +12,8 @@ declare var drupalSettings:any;
     public autoCompleteJS: any;
     public keysPressed: Object = {};
     public popularIndex: number = -1;
+    // Rendered icon markup, keyed by the selector an item's `icon` holds.
+    public icons: Record<string, string> = {};
 
     /**
      * Construct.
@@ -49,11 +51,15 @@ declare var drupalSettings:any;
         .sort((a, b) => b.count - a.count)
         .slice(0, 5);
 
-      // Match against cached data to get labels/icons.
+      // Match against cached data to get labels/icons. Results kept for
+      // another user, or from before the site's results changed, are not.
       let data: any[] = [];
-      try {
-        data = JSON.parse(localStorage.getItem('valetData')) || [];
-      } catch (e) {}
+      const stored = this.readStored();
+      if (stored !== null) {
+        const normalized = this.normalize(stored);
+        data = normalized.items;
+        this.icons = normalized.icons;
+      }
 
       const dataMap: Record<string, any> = {};
       if (Array.isArray(data)) {
@@ -74,7 +80,7 @@ declare var drupalSettings:any;
       this.$popular.innerHTML = '<div class="valet--popular-label">Recent</div>' +
         items.map(item => `
           <a class="valet--popular-item" href="${item.url}" data-url="${item.url}">
-            <span class="icon ${item.icon || ''}"></span>
+            ${this.iconHtml(item.icon)}
             <span class="label">${item.label}</span>
           </a>
         `).join('');
@@ -254,7 +260,7 @@ declare var drupalSettings:any;
             // Modify Results Item Content
             item.innerHTML = `
             <span class="title">
-              <span class="icon ${data.value.icon}"></span>
+              ${this.iconHtml(data.value.icon)}
               ${data.value.label}
             </span>
             <span class="description">
@@ -314,34 +320,77 @@ declare var drupalSettings:any;
       }
     }
 
-    public getData = async () => {
-      try {
-        const cacheId = this.$element.dataset.cacheId;
-        let data = localStorage ? JSON.parse(localStorage.getItem('valetData')) : null;
-        if (localStorage && data !== null) {
-          const oldCacheId = localStorage.getItem('valetCacheId');
-          if (cacheId !== oldCacheId) {
-            localStorage.setItem('valetCacheId', cacheId);
-            data = null;
-          }
-        }
-        // Fetch new data.
-        if (data === null) {
-          const data = await this.fetchData().then(data => {
-            const dataString = JSON.stringify(data);
-            if (dataString !== JSON.stringify({})) {
-              localStorage.setItem('valetData', dataString);
-            }
-            return data;
-          });
-          return data;
-        }
-        else {
-          return data;
-        }
-      } catch (e) {
-        return e;
+    /**
+     * Reads the endpoint's response, in either of its shapes.
+     *
+     * The endpoint answers `{items, icons}`; before icons were rendered it
+     * answered the items alone, and a browser may still hold that.
+     */
+    protected normalize(data: any): { items: any[], icons: Record<string, string> } {
+      if (Array.isArray(data)) {
+        return { items: data, icons: {} };
       }
+      if (data && typeof data === 'object' && Array.isArray(data.items)) {
+        return { items: data.items, icons: data.icons && typeof data.icons === 'object' ? data.icons : {} };
+      }
+      return { items: [], icons: {} };
+    }
+
+    /**
+     * Builds an item's icon.
+     *
+     * The rendered markup where the endpoint sent one, which is the only way
+     * an icon whose library renders inline SVG draws; otherwise the selector
+     * as a class, which is how a font icon has always been drawn.
+     */
+    protected iconHtml(icon: string): string {
+      if (icon && this.icons[icon]) {
+        return `<span class="icon">${this.icons[icon]}</span>`;
+      }
+      return `<span class="icon ${icon || ''}"></span>`;
+    }
+
+    /**
+     * The key the browser's copy of the results is kept under.
+     *
+     * The page's id changes whenever the site's results may have; the user's
+     * id and permissions hash come from drupalSettings rather than the page,
+     * which is cached for everyone sharing a set of permissions.
+     */
+    protected getCacheId(): string {
+      const user = (typeof drupalSettings !== 'undefined' && drupalSettings.user) || {};
+      return [this.$element.dataset.cacheId, user.uid || '', user.permissionsHash || ''].join('-');
+    }
+
+    /**
+     * The results this browser kept under the current cache id, if any.
+     */
+    protected readStored(): any {
+      try {
+        if (localStorage.getItem('valetCacheId') === this.getCacheId()) {
+          return JSON.parse(localStorage.getItem('valetData'));
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    public getData = async () => {
+      const cacheId = this.getCacheId();
+      let data = this.readStored();
+      // Fetch new data.
+      if (data === null) {
+        data = await this.fetchData();
+        // Kept only when it is results, never an error answered instead.
+        if (data && (Array.isArray(data) || Array.isArray(data.items))) {
+          try {
+            localStorage.setItem('valetData', JSON.stringify(data));
+            localStorage.setItem('valetCacheId', cacheId);
+          } catch (e) {}
+        }
+      }
+      const normalized = this.normalize(data);
+      this.icons = normalized.icons;
+      return normalized.items;
     }
 
     protected fetchData = async () => {
@@ -361,7 +410,18 @@ declare var drupalSettings:any;
       this.isOpen = true;
       this.$element.classList.add('valet--active');
       this.$input.value = '';
-      this.showPopular();
+      if (this.readStored() === null) {
+        // Nothing kept for this user and these results: fetch them, so the
+        // recent links can be shown with their labels and icons.
+        this.getData().then(() => {
+          if (this.isOpen && this.$input.value === '') {
+            this.showPopular();
+          }
+        });
+      }
+      else {
+        this.showPopular();
+      }
       setTimeout(() => {
         this.$input.focus();
       }, 300);

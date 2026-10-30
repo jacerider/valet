@@ -1,0 +1,10 @@
+valet.resource.valet_test:
+  type: mapping
+  label: Valet test
+  mapping:
+    status:
+      type: boolean
+      label: Status
+    settings:
+      type: sequence
+      label: Settings

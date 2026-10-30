@@ -1,0 +1,7 @@
+name: 'Valet test'
+type: module
+description: 'A Valet resource and icon definitions for the Valet tests.'
+package: Testing
+hidden: true
+dependencies:
+  - valet:valet

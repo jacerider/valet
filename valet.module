@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\user\RoleInterface;
 
 /**
@@ -41,6 +42,31 @@ function valet_theme() {
  * Implements hook_ENTITY_TYPE_presave().
  */
 function valet_user_role_presave(RoleInterface $role) {
+  valet_cache_flush();
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for neo_icon_library.
+ */
+function valet_neo_icon_library_insert(EntityInterface $library) {
+  valet_cache_flush();
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update() for neo_icon_library.
+ *
+ * Valet's results carry their icons rendered, and browsers keep the results.
+ * Saving a library, as switching its render mode or re-uploading its package
+ * does, must make them fetch the results again.
+ */
+function valet_neo_icon_library_update(EntityInterface $library) {
+  valet_cache_flush();
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete() for neo_icon_library.
+ */
+function valet_neo_icon_library_delete(EntityInterface $library) {
   valet_cache_flush();
 }
 

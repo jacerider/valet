@@ -39,9 +39,19 @@ class Valet extends RenderElement {
 
   /**
    * Prepares a #type 'valet' render element for input.html.twig.
+   *
+   * The element is render cached per set of permissions, so it carries
+   * nothing about the user: script adds the user's id and permissions hash
+   * from drupalSettings to the cache id itself, which keeps one user's cached
+   * results from being served to another in the same browser.
    */
   public static function preRenderValet($element) {
-    $element['#attributes']['data-cache-id'] = \Drupal::state()->get('valet.cache_id') . '-' . \Drupal::currentUser()->id();
+    $element['#attributes']['data-cache-id'] = (string) \Drupal::state()->get('valet.cache_id');
+    // Icons arrive rendered by neo_icon; an inline SVG one needs only the
+    // module's sizing rules, which no library may have put on this page.
+    if (\Drupal::moduleHandler()->moduleExists('neo_icon')) {
+      $element['#attached']['library'][] = 'neo_icon/icon-inline';
+    }
     return $element;
   }
 

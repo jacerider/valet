@@ -181,7 +181,34 @@ abstract class ValetResourceBase extends PluginBase implements ValetResourceInte
   }
 
   /**
-   * {@inheritdoc}
+   * The neo_icon icons getIcon() has handed out, keyed by selector.
+   *
+   * @var \Drupal\neo_icon\IconInterface[]
+   */
+  protected array $icons = [];
+
+  /**
+   * Gets the neo_icon icons this resource's results use, keyed by selector.
+   *
+   * The results carry only each icon's selector. Script cannot draw an icon
+   * from its selector once its library renders inline SVG, so the endpoint
+   * renders these and ships the markup beside the results.
+   *
+   * @return \Drupal\neo_icon\IconInterface[]
+   *   The icons, keyed by selector.
+   */
+  public function getIcons(): array {
+    return $this->icons;
+  }
+
+  /**
+   * Gets the selector of the icon matching a string.
+   *
+   * @param string $string
+   *   The text to match an icon to, such as a menu link title.
+   *
+   * @return string
+   *   The icon's selector, or an empty string when nothing matches.
    */
   protected function getIcon($string) {
     if (function_exists('exo_icon')) {
@@ -200,6 +227,7 @@ abstract class ValetResourceBase extends PluginBase implements ValetResourceInte
         'admin',
       ]);
       if ($icon = $neoIcon->getIcon()) {
+        $this->icons[$icon->getSelector()] = $icon;
         return $icon->getSelector();
       }
     }

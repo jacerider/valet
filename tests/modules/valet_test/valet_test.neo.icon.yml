@@ -1,0 +1,7 @@
+# Names the test package's icons for the Valet tests' resource.
+valet_test.alpha:
+  exact: valet test alpha
+  icon: chevron
+valet_test.beta:
+  exact: valet test beta
+  icon: grid
