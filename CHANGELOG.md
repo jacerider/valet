@@ -29,3 +29,37 @@ user's links. The element now carries only the site's cache id; script adds the
 user's id and permissions hash from `drupalSettings`, so the kept results are
 also fetched again when a user's roles change. Recent links show only from
 results kept for the current user, and are fetched when there are none.
+
+## 2.1.4 — 2026-08-17
+
+- `valet.info.yml` carries the right version again.
+
+## 2.1.3 — 2026-07-08
+
+- The admin form's optional typed config manager argument is declared
+  nullable, for PHP 8.4.
+
+## 2.1.2 — 2026-03-12
+
+- Drupal 11: the admin form hands `ConfigFormBase` the typed config manager
+  when the container has one.
+
+## 2.1.1 — 2026-03-11
+
+- A **Recent** list shows the five links the user has chosen most, before
+  anything is typed.
+- Valet's colour follows the theme's `--color-primary-500` when it is set.
+
+## 2.1.0 — 2026-03-11
+
+- Results whose label matches rank above tag-only matches, then by how often
+  they have been chosen in this browser.
+- The last eXo names are gone: browser storage keys are now `valetData` and
+  `valetCacheId`, so browsers fetch their results once more.
+- The build moved from gulp to esbuild and sass.
+
+## Releases before 2.1.0 are not recorded
+
+This file was started in October 2026. The releases from `2.1.0` on were
+recorded afterwards from their commits; earlier ones are in the git history
+only.
